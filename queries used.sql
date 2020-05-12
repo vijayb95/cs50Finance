@@ -12,10 +12,12 @@
 -- CREATE TABLE people ( id INTEGER, name TEXT NOT NULL, birth NUMERIC, PRIMARY KEY(id) )
 
 
--- create table holdings(userId INTEGER, symbol TEXT, name TEXT, shares INTEGER, FOREIGN KEY(userId) REFERENCES users(id))
+-- create table holdings(userId INTEGER, symbol TEXT, name TEXT, shares INTEGER, initPrice DECIMAL(7,2), FOREIGN KEY(userId) REFERENCES users(id))
 
 
 -- db.execute("INSERT INTO users (id,username,hash) VALUES (NULL,?,?)",user,h)
 
 
-create table history (userId INTEGER, symbol TEXT, actionType TEXT, shares INTEGER, price INTEGER, transDate TEXT, FOREIGN KEY(userId) REFERENCES users(id))
+create table history (userId INTEGER, symbol TEXT, actionType TEXT, shares INTEGER, price DECIMAL(7,2), transDate TEXT, FOREIGN KEY(userId) REFERENCES users(id))
+
+drop table holdings

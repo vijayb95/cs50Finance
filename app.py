@@ -118,7 +118,9 @@ def quote():
         symbol = request.form.get("symbol")
         quote = lookup(symbol)
         company = quote["name"]
-        price = str(quote["price"])
+        price = usd(quote["price"])
+        # price = str(quote["price"])
+        
         # content = "A share of " + company + " " + symbol + " costs $:" + price
         # return render_template("quote.html", company = company, price = price, symbol = symbol)
         # Having this variable called number in both post and get
