@@ -121,7 +121,8 @@ def quote():
         price = str(quote["price"])
         # content = "A share of " + company + " " + symbol + " costs $:" + price
         # return render_template("quote.html", company = company, price = price, symbol = symbol)
-        # Having this variable called number in both post and get methods to determine which part to executed in html file
+        # Having this variable called number in both post and get
+        #  methods to determine which part to executed in html file
         return render_template("quote.html", company = company, symbol = symbol, price = price, number = 1)
 
     else:
