@@ -8,6 +8,7 @@ app = Flask(__name__)
 def home():
     return "Hello, Flask!"
 
+# sample comment
 @app.route("/hello/<name>")
 def hello_there(name):
     now = datetime.now()
