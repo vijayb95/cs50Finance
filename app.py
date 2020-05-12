@@ -23,8 +23,6 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-#adding api key to os.environ
-os.environ["API_KEY"] = "pk_300a5d641905415c94653a221ef39f2d"
 # Custom filter
 app.jinja_env.filters["usd"] = usd
 
@@ -36,6 +34,9 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
+
+#adding api key to os.environ
+os.environ["API_KEY"] = "pk_300a5d641905415c94653a221ef39f2d"
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
