@@ -15,9 +15,12 @@
 -- create table holdings(userId INTEGER, symbol TEXT, name TEXT, shares INTEGER, initPrice DECIMAL(7,2), FOREIGN KEY(userId) REFERENCES users(id))
 
 
+
 -- db.execute("INSERT INTO users (id,username,hash) VALUES (NULL,?,?)",user,h)
 
+update users set cash = '10000'
 
-create table history (userId INTEGER, symbol TEXT, actionType TEXT, shares INTEGER, price DECIMAL(7,2), transDate TEXT, FOREIGN KEY(userId) REFERENCES users(id))
+-- create table history (userId INTEGER, symbol TEXT, actionType TEXT, shares INTEGER, price DECIMAL(7,2), transDate TEXT, FOREIGN KEY(userId) REFERENCES users(id))
 
-drop table holdings
+-- drop table holdings
+drop table history

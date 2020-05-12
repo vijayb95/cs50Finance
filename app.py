@@ -3,6 +3,7 @@ import os, hashlib
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
+from datetime import datetime
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -47,14 +48,57 @@ if not os.environ.get("API_KEY"):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return render_template("index.html")
+    id = session["user_id"]
+    cash = db.execute("select cash from users where id = ?", id)
+    cash = usd(float(cash[0]["cash"]))
+    total = cash
+    # total = usd(total)
+    try:
+        rows = db.execute("select symbol,name,shares from holdings where id = ?", id)
+        rows = rows[0]
+    except:
+        pass
+    return render_template("index.html",cash = cash,total = total)
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        if not request.form.get("symbol"):
+            return apology("Please enter a Symbol")
+
+        # Ensure password was submitted
+        elif not request.form.get("shares"):
+            return apology("Enter the number of shares you want to buy")
+        
+        symbol = request.form.get("symbol")
+        quote = lookup(symbol)
+
+        if not quote:
+            return apology("Invalid Symbol")
+        company = quote["name"]
+        price = quote["price"]
+        symbol = request.form.get("symbol")
+        qty = float(request.form.get("shares"))
+        id = session["user_id"]
+        cash = db.execute("select cash from users where id = ?", id)
+        qty = (price * qty)
+        c = cash[0]["cash"]
+        price = float(c)
+        amt = price - qty
+        # UPDATE employees SET lastname = 'Smith' WHERE employeeid = 3;
+        # updating the amount in users table
+        db.execute("UPDATE users SET cash = ? where id = ?", amt, id)
+        # determining current Date
+        curDate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        # creating history by adding the transaction to history table
+        db.execute("INSERT INTO history (userId,symbol,actionType,shares,price,transDate) VALUES (?,?,?,?,?,?)",id,symbol,'BUY',qty,price,curDate)
+        db.execute("INSERT INTO holdings (userId,symbol,name,shares,initPrice) VALUES (?,?,?,?,?)",id, symbol,company,qty,price)
+        return redirect("/")
+    else:
+        return render_template("buy.html")
 
 
 @app.route("/history")
@@ -115,8 +159,12 @@ def logout():
 def quote():
     """Get stock quote."""
     if request.method == "POST":
+        if not request.form.get("symbol"):
+            return apology("Symbol is blank")
         symbol = request.form.get("symbol")
         quote = lookup(symbol)
+        if not quote:
+            return apology("Symbol is not valid")
         company = quote["name"]
         price = usd(quote["price"])
         # price = str(quote["price"])

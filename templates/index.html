@@ -17,28 +17,27 @@
                     <th>TOTAL</th>
                 </tr>
             </thead>
-            <tfoot>
-                <tr>
-                    <!--should be outputting current available cash value-->
-                    <td colspan="4"></td>
-                    <td>$10,979.41</td>
-                </tr>
-            </tfoot>
             <tbody>
                 <!--for statement will come here, will be printing for every single value returned from the sql table -->
-                    <tr>
+                    <!-- <tr>
                         <td>AAPL</td>
                         <td>Apple, Inc.</td>
                         <td>8</td>
                         <td>$313.42</td>
                         <td>$2,507.32</td>
-                    </tr>
+                    </tr> -->
                 <!--end for-->
                 <tr>
-                    <td colspan="4">CASH</td>
-                    <td>$4,273.80</td>
+                    <td style="text-align:left;" colspan="4">CASH</td>
+                    <td>{{ cash }}</td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"></td>
+                    <td>{{ total }}</td>
+                </tr>
+            </tfoot>
         </table>
     </main>
 {% endblock %}
