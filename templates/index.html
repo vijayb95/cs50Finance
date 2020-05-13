@@ -27,9 +27,19 @@
                         <td>$2,507.32</td>
                     </tr> -->
                 <!--end for-->
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row["symbol"] }}</td>
+                        <td>{{ row["name"] }}</td>
+                        <td>{{ row["shares"] }}</td>
+                        <td>${{ row["curCost"] }}</td>
+                        <td>${{ row["value"] }}</td>
+                    </tr>
+                {% endfor %}
                 <tr>
-                    <td style="text-align:left;" colspan="4">CASH</td>
-                    <td>{{ cash }}</td>
+                    <td>CASH</td>
+                    <td colspan="3"></td>
+                    <td colspan="4">{{ cash }}</td>
                 </tr>
             </tbody>
             <tfoot>

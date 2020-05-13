@@ -35,7 +35,6 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
-
 #adding api key to os.environ
 os.environ["API_KEY"] = "pk_300a5d641905415c94653a221ef39f2d"
 
@@ -50,15 +49,26 @@ def index():
     """Show portfolio of stocks"""
     id = session["user_id"]
     cash = db.execute("select cash from users where id = ?", id)
-    cash = usd(float(cash[0]["cash"]))
-    total = cash
+    cash = float(cash[0]["cash"])
     # total = usd(total)
     try:
-        rows = db.execute("select symbol,name,shares from holdings where id = ?", id)
-        rows = rows[0]
+        total = cash
+        rows = db.execute("select symbol,name,shares from holdings where userId = ?", id)
+        i = 0
+        for row in rows[0:]:
+            shares = row["shares"]
+            curCost = lookup(row["symbol"])
+            curCost = curCost["price"]
+            value = curCost * shares
+            rows[i]["curCost"] = curCost
+            rows[i]["value"] = value
+            i += 1
+            total = value + total
+        return render_template("index.html",cash = usd(cash), total = usd(total), rows = rows)
+
     except:
-        pass
-    return render_template("index.html",cash = cash,total = total)
+        total = cash
+        return render_template("index.html",cash = cash, total = total)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -84,6 +94,7 @@ def buy():
         qty = float(request.form.get("shares"))
         id = session["user_id"]
         cash = db.execute("select cash from users where id = ?", id)
+        q=qty
         qty = (price * qty)
         c = cash[0]["cash"]
         price = float(c)
@@ -94,8 +105,20 @@ def buy():
         # determining current Date
         curDate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         # creating history by adding the transaction to history table
-        db.execute("INSERT INTO history (userId,symbol,actionType,shares,price,transDate) VALUES (?,?,?,?,?,?)",id,symbol,'BUY',qty,price,curDate)
-        db.execute("INSERT INTO holdings (userId,symbol,name,shares,initPrice) VALUES (?,?,?,?,?)",id, symbol,company,qty,price)
+        db.execute("INSERT INTO history (userId,symbol,actionType,shares,price,transDate) VALUES (?,?,?,?,?,?)",id,symbol,'BUY',q,qty,curDate)
+
+        try:
+            row = db.execute("SELECT * FROM holdings WHERE userId = :userId AND symbol = :symb",userId=id, symb = symbol)
+            if row:
+                share = q + row[0]["shares"]
+                share = int(share)
+                db.execute("UPDATE holdings SET shares = ? where userId =? AND symbol = ?", share, id, symbol)
+            else:
+                db.execute("INSERT INTO holdings (userId,symbol,name,shares) VALUES (?,?,?,?)",id, symbol,company,q)
+            pass
+        except:
+            db.execute("INSERT INTO holdings (userId,symbol,name,shares) VALUES (?,?,?,?)",id, symbol,company,q)
+            pass
         return redirect("/")
     else:
         return render_template("buy.html")
