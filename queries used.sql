@@ -31,7 +31,10 @@
 
 -- -- db.execute("INSERT INTO users (id,username,hash) VALUES (NULL,?,?)",user,h)
 
+---UPDATE holdings SET shares = 2 where userId = '8' AND shares = ?
+
 -- update users set cash = '10000';
+
 
 -- drop table holdings;
 -- create table holdings(userId INTEGER, symbol TEXT, name TEXT, shares INTEGER, FOREIGN KEY(userId) REFERENCES users(id));

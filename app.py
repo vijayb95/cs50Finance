@@ -247,11 +247,38 @@ def register():
 def sell():
     """Sell shares of stock"""
     if request.method == "POST":
+        id = session["user_id"]
         if not request.form.get("shares"):
             return apology("Enter the number of shares to sell")
         
         if not request.form.get("symbol"):
             return apology("Enter the symbol")
+        symbol = request.form.get("symbol")
+        sellCount = int(request.form.get("shares"))
+        availShare = 0
+        try:
+            rows = db.execute("SELECT shares FROM holdings WHERE userId = :userId AND symbol = :symb",userId = id, symb = symbol)
+            availShare = rows[0]["shares"]
+            if sellCount > availShare:
+                return apology("Not having enough to sell")
+        except:
+            return apology("Please check the symbol")
+
+        temp = lookup(symbol)
+        sellValue = float(temp["price"]) * sellCount
+        cash = db.execute("select cash from users where id = ?", id)
+        cash = float(cash[0]["cash"])
+        cash = cash + sellValue
+        availShare = availShare - sellCount
+        # determining current Date
+        curDate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        # updating the available cash in users table, updating the new share count in holdings table and adding a copy of the transaction to history
+        db.execute("UPDATE users SET cash = ? where id = ?", int(cash), id)
+        db.execute("UPDATE holdings SET shares = ? where userId = ? AND symbol = ?", availShare, id, symbol)
+        db.execute("INSERT INTO history (userId,symbol,actionType,shares,price,transDate) VALUES (?,?,?,?,?,?)",id,symbol,'SELL',sellCount,round(sellValue,2),curDate)
+        flash("Sold!")
+        return redirect("/")
+
     else:
         
         try:
