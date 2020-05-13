@@ -61,7 +61,7 @@ def index():
             curCost = curCost["price"]
             value = curCost * shares
             rows[i]["curCost"] = curCost
-            rows[i]["value"] = value
+            rows[i]["value"] = round(value,2)
             i += 1
             total = value + total
         return render_template("index.html",cash = usd(cash), total = usd(total), rows = rows)
@@ -97,6 +97,9 @@ def buy():
         q=qty
         qty = (price * qty)
         c = cash[0]["cash"]
+
+        if int(qty) > int(c):
+            return apology("Not having enough money for a purchase")
         price = float(c)
         amt = price - qty
         # UPDATE employees SET lastname = 'Smith' WHERE employeeid = 3;
@@ -119,6 +122,7 @@ def buy():
         except:
             db.execute("INSERT INTO holdings (userId,symbol,name,shares) VALUES (?,?,?,?)",id, symbol,company,q)
             pass
+        flash('Bought!')
         return redirect("/")
     else:
         return render_template("buy.html")
@@ -234,7 +238,7 @@ def register():
         # Returning to login page
         return redirect("/")
     else:
-        return render_template("/register.html")
+        return render_template("register.html")
 
 
 
@@ -242,7 +246,20 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        if not request.form.get("shares"):
+            return apology("Enter the number of shares to sell")
+        
+        if not request.form.get("symbol"):
+            return apology("Enter the symbol")
+    else:
+        
+        try:
+            rows = db.execute("SELECT symbol FROM holdings WHERE userId = :userId",userId = session["user_id"])
+            return render_template("sell.html", rows = rows)
+
+        except:
+            return render_template("sell.html")
 
 
 def errorhandler(e):
