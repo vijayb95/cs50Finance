@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History &#128552;
+{% endblock %}
+
+{% block main %}
+<main class="container p-5">
+            
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Action</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Transacted</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+                <!-- <tr>
+                    <td>EXPD</td>
+                    <td>100</td>
+                    <td>$74.83</td>
+                    <td>2020-05-10 13:29:56</td>
+                </tr> -->
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row["symbol"] }}</td>
+                        <td>{{ row["actionType"] }}</td>
+                        <td>{{ row["shares"] }}</td>
+                        <td>${{ row["price"] }}</td>
+                        <td>{{ row["transDate"] }}</td>
+                    </tr>
+                {% endfor %}
+ 
+            
+        </tbody>
+    </table>
+
+</main>
+{% endblock %}

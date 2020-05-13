@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+
+{% block main %}
+    <main class="container p-5">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--for statement will come here, will be printing for every single value returned from the sql table -->
+                    <!-- <tr>
+                        <td>AAPL</td>
+                        <td>Apple, Inc.</td>
+                        <td>8</td>
+                        <td>$313.42</td>
+                        <td>$2,507.32</td>
+                    </tr> -->
+                <!--end for-->
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row["symbol"] }}</td>
+                        <td>{{ row["name"] }}</td>
+                        <td>{{ row["shares"] }}</td>
+                        <td>${{ row["curCost"] }}</td>
+                        <td>${{ row["value"] }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>CASH</td>
+                    <td colspan="3"></td>
+                    <td colspan="4">{{ cash }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"></td>
+                    <td>{{ total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </main>
+{% endblock %}
